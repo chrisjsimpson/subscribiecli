@@ -1,0 +1,6 @@
+subscribiecli.egg-info/*
+build/*
+dist/*
+venv/*
+*.pyc
+*.swp
