@@ -16,7 +16,6 @@ setuptools.setup(
     install_requires=[
         'Click',
         'gitpython',
-        'sqlite3',
         'datetime',
         'subscribie',
     ],
