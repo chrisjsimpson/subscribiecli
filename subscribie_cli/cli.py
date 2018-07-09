@@ -17,14 +17,14 @@ def init(ctx):
     click.echo("Initalising a new subscribie project")
     # Get example .env file, rename & place it in current working directory
     click.echo("... getting example .env file")
-    response = urllib2.urlopen('https://raw.githubusercontent.com/KarmaComputing/subscribie/master/subscribie/.env.example')
+    response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/.env.example')
     envfile = response.read()
     with open('.env', 'wb') as fh:
         fh.write(envfile)
 
     # Get example jamla.yaml file, rename & place it in current working directory
     click.echo("... getting example jamla.yaml file")
-    response = urllib2.urlopen('https://raw.githubusercontent.com/KarmaComputing/subscribie/master/subscribie/jamla.yaml.example')
+    response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/jamla.yaml.example')
     jamlafile = response.read()
     with open('jamla.yaml', 'wb') as fh:
         fh.write(jamlafile)
@@ -67,12 +67,12 @@ def initdb():
         click.echo('... creating data.db')
         pass
     click.echo('... running initial database creation script')
-    response = urllib2.urlopen('https://raw.githubusercontent.com/KarmaComputing/subscribie/master/subscribie/createdb.py')
+    response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/createdb.py')
     createdb = response.read()
     exec(createdb) #TODO change all these to migrations
     click.echo("... fetching migrations, this might take a while")
     try:
-        git.Git().clone('git@github.com:KarmaComputing/subscribie.git')
+        git.Git().clone('git@github.com:Subscribie/subscribie.git')
     except Exception as inst:
         click.echo("Warning: Failed to clone subscribie migrations")
     click.echo("... running migrations")
