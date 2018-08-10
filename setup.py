@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='subscribiecli',
-    version="0.0.1",
+    version="0.0.1.2",
     author="Karma Computing",
     author_email="subscribie@karmacomputing.co.uk",
     desciption="cli utility for Subscribie",
@@ -18,6 +18,7 @@ setuptools.setup(
         'gitpython',
         'datetime',
         'subscribie',
+        'pyOpenSSL',
     ],
     entry_points='''
         [console_scripts]
