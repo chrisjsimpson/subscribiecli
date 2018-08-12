@@ -129,9 +129,10 @@ def migrate():
               (not needed by default, unless doing a partner integration)')
 @click.option('--GOCARDLESS_CLIENT_SECRET', default=None, help='GoCardless client \
                secret (not needed by default, unless doing partner integration')
-def setconfig(jamla_path, secret_key, template_folder, uploaded_images_dest, \
-              db_full_path, success_redirect_url, thankyou_url, email_host, \
-              gocardless_client_id, gocardless_client_secret):
+def setconfig(jamla_path, secret_key, template_folder, static_folder, \
+              uploaded_images_dest, db_full_path, success_redirect_url, \
+              thankyou_url, email_host, gocardless_client_id, \
+              gocardless_client_secret):
     """Updates the config.py which is stored in instance/config.py
     :param config: a dictionary 
     """
