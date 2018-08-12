@@ -8,9 +8,11 @@ import re
 import git
 import inspect
 
+
 @click.group()
 def cli():
     pass
+
 
 @cli.command()
 @click.pass_context
@@ -19,7 +21,7 @@ def init(ctx):
     click.echo("Initalising a new subscribie project")
     # Get example .env file, rename & place it in current working directory
     click.echo("... getting example config.py file")
-    response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')
+    response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')  # noqa
     configfile = response.read()
     print "#"*80
     fullpath = os.path.join('./instance/config.py')
@@ -74,6 +76,7 @@ def init(ctx):
     ctx.invoke(initdb)
     click.echo("Done")
 
+
 @cli.command()
 def initdb():
     """ Initalise the database """
@@ -88,7 +91,8 @@ def initdb():
     response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/createdb.py')
     createdb = response.read()
     exec(createdb) #TODO change all these to migrations
-    
+
+
 @cli.command()
 def migrate():
     """ Run latest migrations """
@@ -101,12 +105,15 @@ def migrate():
             click.echo("... running migration: " + name)
             subprocess.call("python " + migration + ' -up -db ./data.db', shell=True)
 
+
 @cli.command()
 @click.option('--JAMLA_PATH', default=None, help='full path to \
                jamla.yaml')
 @click.option('--SECRET_KEY', default=None, help='Random key for flask \
                sessions')
 @click.option('--TEMPLATE_FOLDER', default=None, help='Path to theme \
+               folder')
+@click.option('--STATIC_FOLDER', default=None, help='Path to static assets \
                folder')
 @click.option('--UPLOADED_IMAGES_DEST', default=None, help='Path to image\
                upload folder')
@@ -150,6 +157,7 @@ def run():
     environ['FLASK_APP'] = 'subscribie'
     click.echo('Running subscribie...')
     subprocess.call("flask run", shell=True)
+
 
 if __name__ == '__main__':
     cli()
