@@ -94,7 +94,8 @@ def initdb():
 
 
 @cli.command()
-def migrate():
+@click.option('--DB_FULL_PATH', default='./data.db', help="Full path to data.db")
+def migrate(db_full_path):
     """ Run latest migrations """
     click.echo("... running migrations")
     migrationsDir = os.path.join(os.getcwd(), 'subscribie', 'migrations')
@@ -103,7 +104,7 @@ def migrate():
         for name in files:
             migration = os.path.join(root, name)
             click.echo("... running migration: " + name)
-            subprocess.call("python " + migration + ' -up -db ./data.db', shell=True)
+            subprocess.call("python " + migration + ' -up -db ' + db_full_path, shell=True)
 
 
 @cli.command()
