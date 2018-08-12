@@ -5,6 +5,7 @@ from os import environ
 import subprocess
 import urllib2
 import re
+import fileinput
 import git
 
 @click.group()
@@ -20,7 +21,7 @@ def init(ctx):
     click.echo("... getting example config.py file")
     response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')
     configfile = response.read()
-    print "#"*223
+    print "#"*80
     fullpath = os.path.join('./instance/config.py')
     with open(fullpath, 'wb') as fh:
         fh.write(configfile)
@@ -99,6 +100,23 @@ def migrate():
             migration = os.path.join(root, name)
             click.echo("... running migration: " + name)
             subprocess.call("python " + migration + ' -up -db ./data.db', shell=True)
+
+@cli.command()
+@click.option('--JAMLA_PATH', default='./jamla.yaml', help='full path to jamla.yaml')
+def setconfig(jamla_path):
+    """Updates the config.py which is stored in instance/config.py
+    :param config: a dictionary 
+    """
+    newConfig = ''
+    for line in fileinput.input('./instance/config.py', mode='rU'):
+        if "JAMLA_PATH" in line:
+            newValue = ''.join(['JAMLA_PATH="', jamla_path, '"'])
+            line = re.sub(r'^JAMLA_PATH.*', newValue, line)
+        newConfig = ''.join([newConfig, line])
+    # Writeout new config file
+    with open('./instance/config.py', 'wb') as fh:
+        fh.write(newConfig)
+
 
 @cli.command()
 def run():
