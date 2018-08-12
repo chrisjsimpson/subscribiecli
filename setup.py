@@ -17,7 +17,6 @@ setuptools.setup(
         'Click',
         'gitpython',
         'datetime',
-        'subscribie',
         'pyOpenSSL',
     ],
     entry_points='''
