@@ -5,8 +5,8 @@ from os import environ
 import subprocess
 import urllib2
 import re
-import fileinput
 import git
+import inspect
 
 @click.group()
 def cli():
@@ -102,17 +102,43 @@ def migrate():
             subprocess.call("python " + migration + ' -up -db ./data.db', shell=True)
 
 @cli.command()
-@click.option('--JAMLA_PATH', default='./jamla.yaml', help='full path to jamla.yaml')
-def setconfig(jamla_path):
+@click.option('--JAMLA_PATH', default=None, help='full path to \
+               jamla.yaml')
+@click.option('--SECRET_KEY', default=None, help='Random key for flask \
+               sessions')
+@click.option('--TEMPLATE_FOLDER', default=None, help='Path to theme \
+               folder')
+@click.option('--UPLOADED_IMAGES_DEST', default=None, help='Path to image\
+               upload folder')
+@click.option('--DB_FULL_PATH', default=None, help='Path to database')
+@click.option('--SUCCESS_REDIRECT_URL', \
+                default=None, \
+                help='Mandate complete redirect url')
+@click.option('--THANKYOU_URL', default=None, \
+              help='Thank you url (journey complete url)')
+@click.option('--EMAIL_HOST', default=None, help='IP or hostname of email \
+              server')
+@click.option('--GOCARDLESS_CLIENT_ID', default=None, help='GoCardless client id \
+              (not needed by default, unless doing a partner integration)')
+@click.option('--GOCARDLESS_CLIENT_SECRET', default=None, help='GoCardless client \
+               secret (not needed by default, unless doing partner integration')
+def setconfig(jamla_path, secret_key, template_folder, uploaded_images_dest, \
+              db_full_path, success_redirect_url, thankyou_url, email_host, \
+              gocardless_client_id, gocardless_client_secret):
     """Updates the config.py which is stored in instance/config.py
     :param config: a dictionary 
     """
     newConfig = ''
-    for line in fileinput.input('./instance/config.py', mode='rU'):
-        if "JAMLA_PATH" in line:
-            newValue = ''.join(['JAMLA_PATH="', jamla_path, '"'])
-            line = re.sub(r'^JAMLA_PATH.*', newValue, line)
-        newConfig = ''.join([newConfig, line])
+    with open('./instance/config.py', 'r') as fh:
+        for line in fh:
+            frame = inspect.currentframe()
+            options = inspect.getargvalues(frame).args
+            for option in options:
+                if option.swapcase() in line and frame.f_locals[option] is not None :
+                    newValue = ''.join([option.swapcase(), '="', str(frame.f_locals[option]), '"'])
+                    expr = r"^" + option.swapcase() + ".*"
+                    line = re.sub(expr, newValue, line)
+            newConfig = ''.join([newConfig, line])
     # Writeout new config file
     with open('./instance/config.py', 'wb') as fh:
         fh.write(newConfig)
