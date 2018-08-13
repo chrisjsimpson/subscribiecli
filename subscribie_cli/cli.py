@@ -64,7 +64,7 @@ def init(ctx):
     # Git clone default template
     try:
         click.echo("... cloning default template")
-        git.Git('themes/').clone('git@github.com:Subscribie/theme-jesmond.git')
+        git.Git('themes/').clone('https://github.com/Subscribie/theme-jesmond.git')
     except Exception as inst:
         click.echo("Warning: Failed to clone default theme. Perhaps it's already cloned?", err=True)
 
