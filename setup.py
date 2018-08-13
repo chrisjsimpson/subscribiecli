@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='subscribiecli',
-    version="0.0.1.4",
+    version="0.0.1.5",
     author="Karma Computing",
     author_email="subscribie@karmacomputing.co.uk",
     desciption="cli utility for Subscribie",
@@ -14,7 +14,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ),
     install_requires=[
-        'Click',
+        'click',
         'gitpython',
         'pyOpenSSL',
     ],
