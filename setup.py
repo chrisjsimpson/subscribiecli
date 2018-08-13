@@ -16,7 +16,6 @@ setuptools.setup(
     install_requires=[
         'Click',
         'gitpython',
-        'datetime',
         'pyOpenSSL',
     ],
     entry_points='''
