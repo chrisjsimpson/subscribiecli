@@ -147,10 +147,57 @@ def setconfig(jamla_path, secret_key, template_folder, static_folder, \
                     newValue = ''.join([option.swapcase(), '="', str(frame.f_locals[option]), '"'])
                     expr = r"^" + option.swapcase() + ".*"
                     line = re.sub(expr, newValue, line)
+                    print "Writing: " + newValue
             newConfig = ''.join([newConfig, line])
     # Writeout new config file
     with open('./instance/config.py', 'wb') as fh:
         fh.write(newConfig)
+
+@cli.command()
+@click.option('--name', help="Name of theme.", required=True, prompt="Theme name")
+@click.option('--base', help="Base theme.", required=True, \
+                prompt="Base theme name", default="jesmond")
+def newtheme(name, base='jesmond'):
+    """Create new theme"""
+    print name
+    print base
+    #Create theme based on `base` theme
+    newThemeDir = os.path.abspath(''.join([os.getcwd(), '/themes/theme-', name]))
+    #Make theme path
+    if os.path.isdir(newThemeDir) is False:
+        try:
+            os.makedirs(newThemeDir)
+        except Exception as e:
+            msg = ''.join(["Failed to create directory '", newThemeDir, \
+                            "' for theme: '", name])
+            print msg
+    else:
+        msg = ''.join(['Theme folder for "', name, '" already exists: ', \
+                        newThemeDir])
+        raise Exception(msg)
+
+    # Copy from base theme
+    try:
+        repoUrl = ''.join(['https://github.com/Subscribie/theme-', base, '.git'])
+        click.echo(''.join(['... cloning base theme: "', base , '" from ', \
+                    repoUrl, ' into "', newThemeDir, '"']))
+        git.Git(newThemeDir).clone(repoUrl, newThemeDir)
+    except Exception as inst:
+        msg = ''.join(['Error: Failed to clone base theme "', base, '" Perhaps \
+                      its already cloned?'])
+        click.echo(msg, err=True)
+
+    # Rename base theme to name of new theme
+    try:
+        srcDir = os.path.abspath(''.join([newThemeDir, '/', base]))
+        dstDir = os.path.abspath(''.join([newThemeDir, '/', name]))
+        shutil.move(srcDir, dstDir)
+    except:
+        msg = ''.join(['Failed to move "', srcDir, '" to "', dstDir, '" ', \
+                        'whilst renaming the base theme folder to "', base, '"'])
+        raise Exception(msg)
+
+    # Set config to point to new theme & static folders
 
 
 @cli.command()
