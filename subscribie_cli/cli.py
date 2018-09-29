@@ -49,14 +49,8 @@ def init(ctx):
     with open('jamla.yaml', 'wb') as fh:
         fh.write(jamlafile)
     # Replace static assets path
-    with open('jamla.yaml', 'r+') as fh:
-        jamla = fh.read()
-        static_folder = ''.join([os.getcwd(), '/themes/theme-jesmond/static/'])
-        jamla = re.sub(r'static_folder:.*', 'static_folder: ' + static_folder, jamla)
-    os.unlink('jamla.yaml')
-    # Write jamla file
-    with open('jamla.yaml', 'w') as fh:
-        fh.write(jamla)
+    static_folder = ''.join([os.getcwd(), '/themes/theme-jesmond/static/'])
+    ctx.invoke(setconfig, static_folder=static_folder)
     try:
         os.mkdir('themes')
     except OSError:
@@ -135,7 +129,7 @@ def setconfig(jamla_path, secret_key, template_folder, static_folder, \
               thankyou_url, email_host, gocardless_client_id, \
               gocardless_client_secret):
     """Updates the config.py which is stored in instance/config.py
-    :param config: a dictionary 
+    :param config: a dictionary
     """
     newConfig = ''
     with open('./instance/config.py', 'r') as fh:
