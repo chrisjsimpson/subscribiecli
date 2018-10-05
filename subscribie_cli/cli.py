@@ -120,13 +120,15 @@ def migrate(db_full_path):
               help='Thank you url (journey complete url)')
 @click.option('--EMAIL_HOST', default=None, help='IP or hostname of email \
               server')
+@click.option('--EMAIL_LOGIN_FROM', default=None, help='IP or hostname of email \
+              server')
 @click.option('--GOCARDLESS_CLIENT_ID', default=None, help='GoCardless client id \
               (not needed by default, unless doing a partner integration)')
 @click.option('--GOCARDLESS_CLIENT_SECRET', default=None, help='GoCardless client \
                secret (not needed by default, unless doing partner integration')
 def setconfig(jamla_path, secret_key, template_folder, static_folder, \
               uploaded_images_dest, db_full_path, success_redirect_url, \
-              thankyou_url, email_host, gocardless_client_id, \
+              thankyou_url, email_host, email_login_from, gocardless_client_id, \
               gocardless_client_secret):
     """Updates the config.py which is stored in instance/config.py
     :param config: a dictionary
