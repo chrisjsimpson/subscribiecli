@@ -120,15 +120,22 @@ def migrate(db_full_path):
               help='Thank you url (journey complete url)')
 @click.option('--EMAIL_HOST', default=None, help='IP or hostname of email \
               server')
-@click.option('--EMAIL_LOGIN_FROM', default=None, help='IP or hostname of email \
-              server')
+@click.option('--MAIL_SERVER', default="127.0.0.1", help='Mail server hostname')
+@click.option('--MAIL_PORT', default=25, type=int, help='Email submission port')
+@click.option('--MAIL_DEFAULT_SENDER', default=None, help='Default mailserver from')
+@click.option('--MAIL_USERNAME', default=None, help='Mailserver username')
+@click.option('--MAIL_PASSWORD', default=None, help='Mailserver password')
+@click.option('--MAIL_USE_TLS', default=True, help='Mailserver use TLS')
+@click.option('--EMAIL_LOGIN_FROM', default=None, help='Default email from')
 @click.option('--GOCARDLESS_CLIENT_ID', default=None, help='GoCardless client id \
               (not needed by default, unless doing a partner integration)')
 @click.option('--GOCARDLESS_CLIENT_SECRET', default=None, help='GoCardless client \
                secret (not needed by default, unless doing partner integration')
 def setconfig(jamla_path, secret_key, template_folder, static_folder, \
               uploaded_images_dest, db_full_path, success_redirect_url, \
-              thankyou_url, email_host, email_login_from, gocardless_client_id, \
+              thankyou_url, email_host, mail_server, mail_port, \
+              mail_default_sender, mail_username, mail_password, mail_use_tls,\
+              email_login_from, gocardless_client_id, \
               gocardless_client_secret):
     """Updates the config.py which is stored in instance/config.py
     :param config: a dictionary
