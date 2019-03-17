@@ -150,7 +150,7 @@ def setconfig(jamla_path, secret_key, template_folder, static_folder, \
                     newValue = ''.join([option.swapcase(), '="', str(frame.f_locals[option]), '"'])
                     expr = r"^" + option.swapcase() + ".*"
                     line = re.sub(expr, newValue, line)
-                    logger.info("Writing: ".format(newValue))
+                    logger.info("Writing: %s", newValue)
             newConfig = ''.join([newConfig, line])
     # Writeout new config file
     with open('./instance/config.py', 'w') as fh:
