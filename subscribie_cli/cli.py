@@ -7,6 +7,7 @@ import urllib.request
 import re
 import git
 import inspect
+from . import logger
 
 
 @click.group()
@@ -18,32 +19,31 @@ def cli():
 @click.pass_context
 def init(ctx):
     """ Initalise a new subscribie project """
-    click.echo("Initalising a new subscribie project")
+    logger.info("Initalising a new subscribie project")
     # Get example .env file, rename & place it in current working directory
-    click.echo("... getting example config.py file")
+    logger.info("... getting example config.py file")
     response = urllib.request.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')  # noqa
     configfile = response.read()
-    print("#"*80)
     fullpath = os.path.join('./instance/config.py')
     with open(fullpath, 'wb') as fh:
         fh.write(configfile)
 
     # Create instance folder for prod
-        click.echo("... creating instance folder for production use")
+        logger.info("creating instance folder for production use")
         try:
             shutil.rmtree('./venv/var/', ignore_errors=True)
         except Exception:
             pass
         try:
             os.makedirs('./venv/var/subscribie-instance/')
-            click.echo("... creating symlink to .env file")
+            logger.info("creating symlink to .env file")
             os.symlink(os.getcwd() + '/.env', os.getcwd() + '/venv/var/subscribie-instance/.env')
         except Exception:
-            click.echo("Warning: failed to create symlink to .env file for production use")
+            logger.warn("Warning: failed to create symlink to .env file for production use")
             pass
 
     # Get example jamla.yaml file, rename & place it in current working directory
-    click.echo("... getting example jamla.yaml file")
+    logger.info("getting example jamla.yaml file")
     response = urllib.request.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/jamla.yaml.example')
     jamlafile = response.read()
     with open('jamla.yaml', 'wb') as fh:
@@ -54,13 +54,13 @@ def init(ctx):
     try:
         os.mkdir('themes')
     except OSError:
-        click.echo("Warning: Failed to create themes directory", err=True)
+        logger.warn("Failed to create themes directory")
     # Git clone default template
     try:
-        click.echo("... cloning default template")
+        logger.info("... cloning default template")
         git.Git('themes/').clone('https://github.com/Subscribie/theme-jesmond.git')
     except Exception as inst:
-        click.echo("Warning: Failed to clone default theme. Perhaps it's already cloned?", err=True)
+        logger.warn("Failed to clone default theme. Perhaps it's already cloned?")
 
     # Edit .env file with correct paths
     fp = open('.env', 'a+')
@@ -68,20 +68,20 @@ def init(ctx):
     fp.write(''.join(['TEMPLATE_FOLDER="', os.getcwd(), '/themes/"', "\n"]))
     fp.close()
     ctx.invoke(initdb)
-    click.echo("Done")
+    logger.info("Done")
 
 
 @cli.command()
 def initdb():
     """ Initalise the database """
     if os.path.isfile('data.db'):
-        click.echo('Error: data.db already exists.', err=True)
+        logger.error('Error: data.db already exists.')
         return -1
 
     with open('data.db', 'w'):
-        click.echo('... creating data.db')
+        logger.info('... creating data.db')
         pass
-    click.echo('... running initial database creation script')
+    logger.info('... running initial database creation script')
     response = urllib.request.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/createdb.py')
     createdb = response.read()
     exec(createdb) #TODO change all these to migrations
@@ -91,13 +91,13 @@ def initdb():
 @click.option('--DB_FULL_PATH', default='./data.db', help="Full path to data.db")
 def migrate(db_full_path):
     """ Run latest migrations """
-    click.echo("... running migrations")
+    logger.info("... running migrations")
     migrationsDir = os.path.join(os.getcwd(), 'subscribie', 'migrations')
     for root, dirs, files in os.walk(migrationsDir):
         files.sort()
         for name in files:
             migration = os.path.join(root, name)
-            click.echo("... running migration: " + name)
+            logger.info("... running migration: " + name)
             subprocess.call("python " + migration + ' -up -db ' + db_full_path, shell=True)
 
 
@@ -150,7 +150,7 @@ def setconfig(jamla_path, secret_key, template_folder, static_folder, \
                     newValue = ''.join([option.swapcase(), '="', str(frame.f_locals[option]), '"'])
                     expr = r"^" + option.swapcase() + ".*"
                     line = re.sub(expr, newValue, line)
-                    print("Writing: ".format(newValue))
+                    logger.info("Writing: ".format(newValue))
             newConfig = ''.join([newConfig, line])
     # Writeout new config file
     with open('./instance/config.py', 'w') as fh:
@@ -162,8 +162,7 @@ def setconfig(jamla_path, secret_key, template_folder, static_folder, \
                 prompt="Base theme name", default="jesmond")
 def newtheme(name, base='jesmond'):
     """Create new theme"""
-    print(name)
-    print(base)
+    logger.info("Creating new theme: " + name + " with base theme: " + base)
     #Create theme based on `base` theme
     newThemeDir = os.path.abspath(''.join([os.getcwd(), '/themes/theme-', name]))
     #Make theme path
@@ -173,7 +172,7 @@ def newtheme(name, base='jesmond'):
         except Exception as e:
             msg = ''.join(["Failed to create directory '", newThemeDir, \
                             "' for theme: '", name])
-            print("Failed to create directory: {}, for theme: {}".format(newThemeDir, name))
+            logger.critical("Failed to create directory: {}, for theme: {}".format(newThemeDir, name))
     else:
         msg = ''.join(['Theme folder for "', name, '" already exists: ', \
                         newThemeDir])
@@ -182,13 +181,13 @@ def newtheme(name, base='jesmond'):
     # Copy from base theme
     try:
         repoUrl = ''.join(['https://github.com/Subscribie/theme-', base, '.git'])
-        click.echo(''.join(['... cloning base theme: "', base , '" from ', \
+        logger.info(''.join(['... cloning base theme: "', base , '" from ', \
                     repoUrl, ' into "', newThemeDir, '"']))
         git.Git(newThemeDir).clone(repoUrl, newThemeDir)
     except Exception as inst:
         msg = ''.join(['Error: Failed to clone base theme "', base, '" Perhaps \
                       its already cloned?'])
-        click.echo(msg, err=True)
+        logger.error(msg)
 
     # Rename base theme to name of new theme
     try:
