@@ -3,7 +3,7 @@ import shutil
 import os
 from os import environ
 import subprocess
-import urllib2
+import urllib.request
 import re
 import git
 import inspect
@@ -21,9 +21,9 @@ def init(ctx):
     click.echo("Initalising a new subscribie project")
     # Get example .env file, rename & place it in current working directory
     click.echo("... getting example config.py file")
-    response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')  # noqa
+    response = urllib.request.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')  # noqa
     configfile = response.read()
-    print "#"*80
+    print("#"*80)
     fullpath = os.path.join('./instance/config.py')
     with open(fullpath, 'wb') as fh:
         fh.write(configfile)
@@ -44,7 +44,7 @@ def init(ctx):
 
     # Get example jamla.yaml file, rename & place it in current working directory
     click.echo("... getting example jamla.yaml file")
-    response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/jamla.yaml.example')
+    response = urllib.request.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/jamla.yaml.example')
     jamlafile = response.read()
     with open('jamla.yaml', 'wb') as fh:
         fh.write(jamlafile)
@@ -82,7 +82,7 @@ def initdb():
         click.echo('... creating data.db')
         pass
     click.echo('... running initial database creation script')
-    response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/createdb.py')
+    response = urllib.request.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/createdb.py')
     createdb = response.read()
     exec(createdb) #TODO change all these to migrations
 
@@ -150,10 +150,10 @@ def setconfig(jamla_path, secret_key, template_folder, static_folder, \
                     newValue = ''.join([option.swapcase(), '="', str(frame.f_locals[option]), '"'])
                     expr = r"^" + option.swapcase() + ".*"
                     line = re.sub(expr, newValue, line)
-                    print "Writing: " + newValue
+                    print("Writing: ".format(newValue))
             newConfig = ''.join([newConfig, line])
     # Writeout new config file
-    with open('./instance/config.py', 'wb') as fh:
+    with open('./instance/config.py', 'w') as fh:
         fh.write(newConfig)
 
 @cli.command()
@@ -162,8 +162,8 @@ def setconfig(jamla_path, secret_key, template_folder, static_folder, \
                 prompt="Base theme name", default="jesmond")
 def newtheme(name, base='jesmond'):
     """Create new theme"""
-    print name
-    print base
+    print(name)
+    print(base)
     #Create theme based on `base` theme
     newThemeDir = os.path.abspath(''.join([os.getcwd(), '/themes/theme-', name]))
     #Make theme path
@@ -173,7 +173,7 @@ def newtheme(name, base='jesmond'):
         except Exception as e:
             msg = ''.join(["Failed to create directory '", newThemeDir, \
                             "' for theme: '", name])
-            print msg
+            print("Failed to create directory: {}, for theme: {}".format(newThemeDir, name))
     else:
         msg = ''.join(['Theme folder for "', name, '" already exists: ', \
                         newThemeDir])
