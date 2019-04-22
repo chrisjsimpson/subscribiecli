@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='subscribiecli',
-    version="0.0.8",
+    version="0.0.9",
     author="Karma Computing",
     author_email="subscribie@karmacomputing.co.uk",
     desciption="cli utility for Subscribie",
