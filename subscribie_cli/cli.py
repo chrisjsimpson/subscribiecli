@@ -132,7 +132,7 @@ def migrate(db_full_path):
 @click.option('--TEMPLATE_BASE_DIR', default='./themes/', help="Set template base dir")
 def setconfig(jamla_path, secret_key, template_folder, static_folder, \
               uploaded_images_dest, db_full_path, success_redirect_url, \
-              thankyou_url, email_host, mail_server, mail_port, \
+              thankyou_url, mail_server, mail_port, \
               mail_default_sender, mail_username, mail_password, mail_use_tls,\
               email_login_from, gocardless_client_id, \
               gocardless_client_secret, template_base_dir):
